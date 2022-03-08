@@ -1,0 +1,96 @@
+<html>
+<head>
+    <title>Super Cool Predicine Sample Lookup</title>
+    <style>
+
+        table th {padding:10px 20px;}
+        table td {padding:10px 20px;}
+    </style>
+</head>
+<meta charset="utf-8">
+    <script type="text/javascript" src="{{ url_for('static', filename='js/jquery-3.6.0.min.js') }}"></script>
+<!--<script type = "text/javascript" src = "/jquery-3.6.0.min.js"></script>-->
+  
+<script type = "text/javascript">
+
+    URL="http://localhost:5001/sample"
+
+    function loadSamples() {
+        $.get(URL, function(data, status) {
+            console.log(data);
+            $tdiv = $("#SampleTable");
+            $tdiv.empty();
+            $table = $("<table>");
+            for(k=0; k<data['samples'].length; k++) {
+                sample = data['samples'][k];
+                $table.prepend(
+                    $("<tr>").append(
+                        "<td>" + sample["sample_id"] + "</td>" +
+                        "<td>" + sample["sample_name"] + "</td>" +
+                        "<td>" + sample["sample_description"] + "</td>"
+                    ));
+                    
+            }
+            $table.prepend("<tr><th>Sample ID</th><th>Sample Name</th><th>Description</th></tr>")
+            $tdiv.append($table)
+        });
+    };
+
+    $().ready(function() {
+        loadSamples();
+
+        $("#RefreshBtn").click(function() {
+            loadSamples();
+        });
+
+        $("#SubmitBtn").click(function() {
+            s_id = $("#s_id").val();  
+            s_name = $("#s_name").val(); 
+            s_description = $("#s_description").val();
+
+            if(!s_id || !s_name || !s_description) { return; }
+            $("#s_id").val("");
+            $("#s_name").val("");
+            $("#s_description").val("");
+            
+            $.ajax({
+                url: URL,
+                type: "POST",
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                data: JSON.stringify({
+                    sample_id: s_id,
+                    sample_name: s_name,
+                    sample_description: s_description,
+                }),
+                success: function(result) {
+                    //loadSamples();
+                }
+            });
+        });
+    });
+
+</script>
+
+<body>
+<h3>Super Cool Predicine Sample Lookup</h3>
+<hr>
+
+<form>
+    
+    <label for="s_id">Sample ID:</label>
+    <input type="number" id="s_id" name="s_id"><br><br>
+    <label for="s_name">Sample Name:</label>
+    <input type="text" id="s_name" name="s_name"><br><br>
+    <label for="s_description">Description:</label>
+    <input type="text" id="s_description" name="s_description"><br>
+  </form>
+
+<button id="SubmitBtn">Add Sample</button>
+<br>
+<hr>
+<button id="RefreshBtn">Refresh</button>
+<div id="SampleTable"></div>
+
+</body>
+</html>
