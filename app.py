@@ -12,7 +12,7 @@ with open("config/config.json") as config_file:
     service_config = json.load(config_file)
 
 app.config["mongo"] = MongoClient(
-    service_config.get("mongo_db_url", "mongodb://172.21.0.2"),
+    service_config.get("mongo_db_url", "mongodb://172.20.0.2"),
     service_config.get("mongo_db_port", 27017),
 )
 
@@ -25,7 +25,7 @@ def version():
 
 @app.route("/sample", methods=["GET"])
 def listSamples():
-    myclient=MongoClient("mongodb://172.21.0.2:27017/")
+    myclient=MongoClient("mongodb://172.20.0.2:27017/")
     mydb=myclient["samples"]
     mycol=mydb["samples"]
 
